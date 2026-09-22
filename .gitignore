@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Runtime uploads
+server/src/uploads/
+
+# Cookies / session data
+**/cookies.txt
+**/old_cookies.txt
