@@ -80,10 +80,10 @@ export function UploadPage() {
 				imageData,
 			})
 
-			showToast({ title: 'Image uploaded',type: 'success' })
+			showToast({ title: 'Image uploaded',description: "",type: 'success' })
 			navigate('/')
 		} catch(err) {
-			showToast({ title: 'Upload failed. Please try again.',type: 'error' })
+			showToast({ title: 'Upload failed. Please try again.',description: "",type: 'error' })
 		} finally {
 			setIsSubmitting(false)
 		}

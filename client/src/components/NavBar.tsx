@@ -1,10 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { House,ImagePlus,Star,Search } from "lucide-react";
 
-interface NavBarProps {
-	onSearchClick?: () => void;
-}
-
 function NavBar() {
 	const navItems=[
 		{ to: "/",icon: House,label: "Home" },

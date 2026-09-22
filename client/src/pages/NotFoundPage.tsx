@@ -1,4 +1,3 @@
-import { SearchIcon } from "lucide-react"
 import { Link } from "react-router-dom";
 
 import {
