@@ -1,19 +1,19 @@
 import {
-  DatabaseSync
+	DatabaseSync
 } from 'node:sqlite';
 import {
-  fileURLToPath
+	fileURLToPath
 } from 'node:url';
 import path from 'node:path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DB_PATH = path.resolve(__dirname, "data.db");
+const __filename=fileURLToPath(import.meta.url);
+const __dirname=path.dirname(__filename);
+const DB_PATH=path.resolve(__dirname,"data.db");
 
-const db = new DatabaseSync(DB_PATH);
+const db=new DatabaseSync(DB_PATH);
 
 db.exec("PRAGMA journal_mode = WAL;");
-const mode = db.prepare("PRAGMA journal_mode;").get();
+const mode=db.prepare("PRAGMA journal_mode;").get();
 console.log(`Current journal mode: ${mode!.journal_mode}`);
 
 db.exec("PRAGMA busy_timeout = 5000;");
@@ -75,6 +75,8 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_images_user_id ON images(user_id);
   CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
+
+	CREATE INDEX IF NOT EXISTS idx_images_deleted_at ON images(deleted_at);
   `);
 
 export default db;

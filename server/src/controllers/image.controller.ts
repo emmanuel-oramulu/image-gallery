@@ -1,4 +1,5 @@
 'use strict';
+import { Worker } from "node:worker_threads";
 import { type Request,type Response,type NextFunction } from 'express';
 import db from '../config/db.js';
 import {
@@ -55,6 +56,37 @@ interface ImageWithoutId {
 	uploaded_at: string;
 }
 
+const isDev=process.env.NODE_ENV!=="production";
+
+function runShuffle(images: ImageWithoutId[]) {
+	return new Promise<ImageWithoutId[]>((resolve,reject) => {
+		const worker=new Worker(
+			new URL(
+				isDev? "../workers/shuffle-worker.ts":"../workers/shuffle-worker.js",
+				import.meta.url
+			),
+			{
+				execArgv: isDev? ["--import","tsx/esm"]:[],
+				workerData: images,
+			}
+		);
+
+		worker.on(
+			"message",
+			(data: ImageWithoutId[]) => {
+				resolve(data);
+				worker.terminate();
+			}
+		);
+		worker.on("error",reject);
+		worker.on(
+			"exit",
+			(code) => {
+				if(code!==0) reject(new Error(`Worker stopped with exit code ${code}`));
+			}
+		);
+	});
+}
 
 export const uploadImage=(req: Request,res: Response,next: NextFunction) => {
 	let filePath: string|undefined=undefined;
@@ -114,7 +146,7 @@ export const uploadImage=(req: Request,res: Response,next: NextFunction) => {
 	}
 };
 
-export const getImages=(req: Request,res: Response,next: NextFunction) => {
+export const getImages=async (req: Request,res: Response,next: NextFunction) => {
 	try {
 		const page=getNumber(req.query.page,1);
 		const limit=getNumber(req.query.limit,20);
@@ -143,16 +175,9 @@ export const getImages=(req: Request,res: Response,next: NextFunction) => {
 
 		const images=db.prepare(sql).all(...params) as unknown as Image[];
 
-		function shuffle(images: ImageWithoutId[]) {
-			const a=[...images];
-			for(let i=a.length-1;i>0;i--) {
-				const j=Math.floor(Math.random()*(i+1));
-				[a[i]!,a[j]!]=[a[j]!,a[i]!];
-			}
-			return a;
-		}
 
-		const responseData=shuffle(getTags(images));
+
+		const responseData=await runShuffle(getTags(images));
 
 		res.status(200).json(responseData);
 	} catch(err) {
