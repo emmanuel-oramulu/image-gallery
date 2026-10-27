@@ -33,7 +33,7 @@ app.use(helmet({
 	crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 app.use(express.json({ limit: '5mb' }));
-app.use(cookieParser())
+app.use(cookieParser());
 
 app.use((req: Request,res: Response,next: NextFunction) => {
 	const time=new Date().toLocaleTimeString();
