@@ -124,7 +124,7 @@ export const login=async (req: Request,res: Response,next: NextFunction) => {
 			{
 				httpOnly: true,
 				secure: true,
-				sameSite: 'none',
+				sameSite: 'lax',
 				maxAge: REFRESH_TOKEN_MAX_AGE_MS,
 			});
 
